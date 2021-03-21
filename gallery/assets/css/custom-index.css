@@ -1,0 +1,87 @@
+
+.darken {
+    background: black;
+}
+
+.grid--zoom img {
+    transition: transform .5s, filter 0.5s ease-in-out;
+    /* filter: grayscale(100%); */
+}
+
+.grid--zoom:hover img {
+    /* filter: grayscale(0); */
+    transform: scale(1.1);
+}
+
+.grid--hover {
+    transition: opacity 1s;
+    opacity: 0.7;
+}
+
+@keyframes placeHolderShimmer {
+    0% {
+        background-position: -468px 0
+    }
+
+    100% {
+        background-position: 468px 0
+    }
+}
+
+.linear-background {
+    box-sizing: border-box;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeHolderShimmer;
+    animation-timing-function: linear;
+    background: #f6f7f8;
+    background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+    background-size: 1000px 104px;
+    position: relative;
+    overflow: hidden;
+    
+    box-shadow: inset 0 0 0 1px black;
+
+}
+
+.image-overlay {
+    position: absolute;
+    z-index: 1999;
+    height: 100%;
+    width: 100%;
+    top: 0%;
+    bottom: 0%;
+    left: 0%;
+    right: 0%;
+    opacity: 1;
+    cursor: pointer;
+}
+
+div.item-wrapper{
+    position: relative;
+    overflow: hidden;
+}
+
+div.item-wrapper>.inner {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+div.menu_block--active{
+    z-index: 2001;
+}
+
+div.body-overlay--active{
+    position: fixed;
+    min-height: 100%;
+    min-width: 100%;
+    z-index: 2000;
+}
+
+div.body-overlay--active-mfp-content{
+    z-index: 0;
+}
