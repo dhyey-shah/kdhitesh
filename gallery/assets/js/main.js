@@ -64,7 +64,7 @@ $(document).ready(function() {
      Add images from image folder dynamically
     ----------------------------------------------------------- */
 
-    var dir = "assets/img/img/";
+    var dir = "https://api.github.com/repos/dhyey-shah/kdhitesh/contents/gallery/assets/img/img/";
     var folders = [];
     var data = [];
 
@@ -72,6 +72,8 @@ $(document).ready(function() {
         $.ajax({
             url: dir,
             async: false,
+            headers: {"Authorization": 'token 8a817b79afd1b6506c79e66e145b94c9d7ba3e7c'},
+            data: JSON,
             success: function (data) {
                 onSuccess(data, params);
             }
@@ -79,37 +81,28 @@ $(document).ready(function() {
     }
 
     function getFolders(data, holder){
-        var i =0;
-        $(data).find("td > a").each(function(){
-            if(i == 0)
-                i++;
-            else
-                holder.push($(this).attr("href"));
+        data.forEach(function(item){
+            holder.push(item.name);
         });
     }
 
     function getImages(data, params){
-        var i =0;
-        $(data).find("td > a").each(function(){
-            if(i == 0)
-                i++;
-            else{
-                let obj = {
-                    name: $(this).attr("href"),
-                    category: params.category
-                }
-                params.holder.push(obj);
+        data.forEach(function(item){
+            let obj = {
+                name: item.name,
+                category: params.category,
+                url: item.download_url
             }
-        });
+            params.holder.push(obj);
+        })
     }
 
     ajaxCall(dir, getFolders, folders);
 
-    for(let i=0;i<folders.length;i++){
-        let item = folders[i].slice(0,-1);
+    folders.forEach(function(item){
         let d = dir + item + '/';
         ajaxCall(d,getImages, {holder:data, category: item});
-    }
+    });
 
     // String formatter
     // https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
@@ -178,12 +171,12 @@ $(document).ready(function() {
     let $filter = $('#filtr-container');
 
     folders.forEach(function(item){
-        $filter.append(html_filter.format(item.slice(0,-1)));
+        $filter.append(html_filter.format(item));
     })
 
     data.forEach(function(item){
         let cat = item.category;
-        let src = dir + cat + '/' + item.name;
+        let src = item.url;
         $grid1.append(html_div.format(cat, src));
     })
 
