@@ -72,7 +72,7 @@ $(document).ready(function() {
         $.ajax({
             url: dir,
             async: false,
-            headers: {"Authorization": 'token cf14b271c5d8cd18b5e2269faabe175c1d39fb5b'},
+            headers: {"Authorization": 'token 02ff93522d2f9693b2410fccf7617565e3feff3f'},
             data: JSON,
             success: function (data) {
                 onSuccess(data, params);
