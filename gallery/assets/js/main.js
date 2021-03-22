@@ -1,5 +1,10 @@
-
-/* ------------------------------------- */
+/*
+ * Cocoon -  Portfolio html  Template
+ * Build Date: december 2017
+ * Author: colorlib
+ * Copyright (C) 2018 colorlib
+ */
+ /* ------------------------------------- */
 /*  TABLE OF CONTENTS
  /* ------------------------------------- */
 /*   PRE LOADING                          */
@@ -14,16 +19,16 @@
 
 
 
-/* ==============================================
+    /* ==============================================
 /*  PRE LOADING
-=============================================== */
+  =============================================== */
 'use strict';
-$(window).ready(function () {
+$(window).load(function() {
     $('.loader').delay(500).fadeOut('slow');
 });
 
 
-$(document).ready(function () {
+$(document).ready(function() {
 
     'use strict';
     /* ==============================================
@@ -41,35 +46,10 @@ $(document).ready(function () {
     /* ==============================================
       Sidebar show and hide
        =============================================== */
-
-    let $body_overlay = $("div.body-overlay");
-    let $mfp_content = $(".mfp-content");
-    let $menu_block = $("div.menu_block");
-
-    $(".menu-btn").on('click', function (e) {
-        e.stopPropagation();
+    $(".menu-btn").on('click',function(i){
         $("body").toggleClass("sidebar_closed");
-        $body_overlay.toggleClass("body-overlay--active");
-        $mfp_content.toggleClass("body-overlay--active-mfp-content");
-        $menu_block.toggleClass("menu_block--active");
     });
 
-    $('div.menu_block').click(function (e) {
-        e.stopPropagation();
-    });
-
-    $('body,html').click(function (e) {
-        $('body').removeClass('sidebar_closed');
-        $body_overlay.removeClass("body-overlay--active");
-        $mfp_content.removeClass("body-overlay--active-mfp-content");
-        $menu_block.removeClass("menu_block--active");
-    });
-
-    $(window).on('scroll touchmove mousewheel', function () {
-        if ($.magnificPopup.instance.isOpen) {
-            $.magnificPopup.close();
-        }
-    })
 
     /* --------------------------------------------------------
      COUNTER JS
@@ -80,23 +60,139 @@ $(document).ready(function () {
         time: 3000
     });
 
+    /* --------------------------------------------------------
+     Add images from image folder dynamically
+    ----------------------------------------------------------- */
+
+    var dir = "assets/img/img/";
+    var folders = [];
+    var data = [];
+
+    function ajaxCall(dir, onSuccess, params={}){
+        $.ajax({
+            url: dir,
+            async: false,
+            success: function (data) {
+                onSuccess(data, params);
+            }
+        });
+    }
+
+    function getFolders(data, holder){
+        var i =0;
+        $(data).find("td > a").each(function(){
+            if(i == 0)
+                i++;
+            else
+                holder.push($(this).attr("href"));
+        });
+    }
+
+    function getImages(data, params){
+        var i =0;
+        $(data).find("td > a").each(function(){
+            if(i == 0)
+                i++;
+            else{
+                let obj = {
+                    name: $(this).attr("href"),
+                    category: params.category
+                }
+                params.holder.push(obj);
+            }
+        });
+    }
+
+    ajaxCall(dir, getFolders, folders);
+
+    for(let i=0;i<folders.length;i++){
+        let item = folders[i].slice(0,-1);
+        let d = dir + item + '/';
+        ajaxCall(d,getImages, {holder:data, category: item});
+    }
+
+    // String formatter
+    // https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
+
+    if (!String.prototype.format) {
+        String.prototype.format = function() {
+          var args = arguments;
+          return this.replace(/{(\d+)}/g, function(match, number) { 
+            return typeof args[number] != 'undefined'
+              ? args[number]
+              : match
+            ;
+          });
+        };
+      }
+
+    // String to be formatted
+    // {0} - category
+    // {1} - img src
+    var html_div = `
+    <div class="grid-item {0}  col-sm-12 col-md-6 col-lg-3">
+        <a href="{1}" title="{0}">
+            <div class="project_box_one">
+                <img src="{1}" alt="pro1" />
+                <div class="product_info">
+                    <div class="product_info_text">
+                        <div class="product_info_text_inner">
+                            <i class="ion ion-plus"></i>
+                            <h4>{0}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    `
+
+    var html_filter = `
+        <li data-filter=".{0}"> <a href="javascript:void(0)">{0}</a></li>
+    `
+
+    // shuffle array
+    // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+
+    function shuffle(array) {
+        var currentIndex = array.length, temporaryValue, randomIndex;
+      
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+      
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+      
+          // And swap it with the current element.
+          temporaryValue = array[currentIndex];
+          array[currentIndex] = array[randomIndex];
+          array[randomIndex] = temporaryValue;
+        }
+      
+        return array;
+    }
+
+    shuffle(data);
+    let $grid1 = $('.grid');
+    let $filter = $('#filtr-container');
+
+    folders.forEach(function(item){
+        $filter.append(html_filter.format(item.slice(0,-1)));
+    })
+
+    data.forEach(function(item){
+        let cat = item.category;
+        let src = dir + cat + '/' + item.name;
+        $grid1.append(html_div.format(cat, src));
+    })
+
 
     /* ==============================================
      portfolio-filter
      =============================================== */
 
     // filter items on button click
-
-    var $wrapper = $("div.item-wrapper");
-    $wrapper.each(function (element) {
-        let w = $("img", this).attr('data-width');
-        let h = $("img", this).attr('data-height');
-        let p = h / w * 100;
-        $(this).css({
-            "width": "100%",
-            "padding-bottom": p + "%"
-        })
-    });
 
     var $grid = $('.grid').isotope({
         // set itemSelector so .grid-sizer is not used in layout
@@ -105,25 +201,18 @@ $(document).ready(function () {
         masonry: {
             // use element for option
             columnWidth: '.grid-sizer'
-        },
-
+        }
     });
 
-    $grid.imagesLoaded().progress(function () {
+    $grid.imagesLoaded().progress( function() {
         $grid.isotope('layout');
     });
-
-    $('div.grid-item img').lazyload();
-
-    $('div.grid-item img').trigger('scroll');
-
-    $('#filtr-container').on('click', 'li', function (e) {
+    $('#filtr-container').on( 'click', 'li', function(e) {
         e.preventDefault();
         $('#filtr-container li').removeClass('active');
         $(this).closest('li').addClass('active');
         var filterValue = $(this).attr('data-filter');
         $grid.isotope({ filter: filterValue });
-        window.scrollTo(0, 0);
     });
 
     /* ==============================================
@@ -133,18 +222,18 @@ $(document).ready(function () {
     // portfolio-pop up
 
     $('.img-container').magnificPopup({
-        delegate: '.grid-item:visible a',
+        delegate: 'a',
         type: 'image',
         tLoading: 'Loading image #%curr%...',
         mainClass: 'mfp-img-mobile',
         gallery: {
             enabled: true,
             navigateByImgClick: true,
-            preload: [0, 1] // Will preload 0 - before current, and 1 after the current image
+            preload: [0,1] // Will preload 0 - before current, and 1 after the current image
         },
         image: {
             tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
-            titleSrc: function (item) {
+            titleSrc: function(item) {
                 return item.el.attr('title');
             }
         },
@@ -153,16 +242,6 @@ $(document).ready(function () {
             duration: 300, // don't foget to change the duration also in CSS
             opener: function (element) {
                 return element.find('img');
-            }
-        },
-        callbacks: {
-            open: function () {
-                $('body').css('overflow', 'hidden');
-                history.pushState({ url: document.location.href }, "", "?img");
-            },
-            close: function () {
-                $('body').css('overflow', '');
-                history.back(-1);
             }
         }
     });
@@ -183,20 +262,20 @@ $(document).ready(function () {
      /* ------------------------------------- */
     'use strict';
 
-    var waypoints = $('.progress_container').waypoint(function () {
+    var waypoints = $('.progress_container').waypoint(function() {
         $('.progress .progress-bar').progressbar({
             transition_delay: 1000
         });
-    }, {
+    },{
         offset: '50%'
     });
 
 
-    /* --------------------------------------------------------
-MAPS
------------------------------------------------------------ */
+        /* --------------------------------------------------------
+    MAPS
+    ----------------------------------------------------------- */
     var map = $('#map');
-    if (map.length > 0) {
+    if(map.length > 0) {
         google.maps.event.addDomListener(window, 'load', init);
         var lattuide = map.attr('data-lat');
         var longtuided = map.attr('data-lon');
@@ -409,5 +488,4 @@ MAPS
             title: 'cocoon!'
         });
     }
-
 });
