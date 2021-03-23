@@ -172,6 +172,30 @@ $(document).ready(function () {
         }
     });
 
+    var $win = $(window),
+    $imgs = $(".grid img");
+
+    function loadVisible($els, trigger) {
+        $els.filter(function () {
+            var rect = this.getBoundingClientRect();
+            return rect.top >= 0 && rect.top <= window.innerHeight;
+        }).trigger(trigger);
+    }
+
+    $grid.isotope('on', 'layoutComplete', function () {
+        loadVisible($imgs, 'lazylazy');
+    });
+
+    $win.on('scroll', function () {
+        loadVisible($imgs, 'lazylazy');
+    });
+
+    $(".grid img").lazyload({
+        effect: "fadeIn",
+        failure_limit: Math.max($imgs.length - 1, 0),
+        event: 'lazylazy'
+    });
+
     $grid.imagesLoaded().progress(function () {
         $grid.isotope('layout');
     });
