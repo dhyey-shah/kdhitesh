@@ -4,7 +4,7 @@
  * Author: colorlib
  * Copyright (C) 2018 colorlib
  */
- /* ------------------------------------- */
+/* ------------------------------------- */
 /*  TABLE OF CONTENTS
  /* ------------------------------------- */
 /*   PRE LOADING                          */
@@ -19,34 +19,32 @@
 
 
 
-    /* ==============================================
+/* ==============================================
 /*  PRE LOADING
   =============================================== */
 'use strict';
-$(window).load(function() {
+$(window).load(function () {
     $('.loader').delay(500).fadeOut('slow');
 });
 
 
-$(document).ready(function() {
+$(document).ready(function () {
 
     'use strict';
     /* ==============================================
      /*   wow
       =============================================== */
-    var wow = new WOW(
-        {
-            animateClass: 'animated',
-            offset: 10,
-            mobile: true
-        }
-    );
+    var wow = new WOW({
+        animateClass: 'animated',
+        offset: 10,
+        mobile: true
+    });
     wow.init();
 
     /* ==============================================
       Sidebar show and hide
        =============================================== */
-    $(".menu-btn").on('click',function(i){
+    $(".menu-btn").on('click', function (i) {
         $("body").toggleClass("sidebar_closed");
     });
 
@@ -63,61 +61,36 @@ $(document).ready(function() {
     /* --------------------------------------------------------
      Add images from image folder dynamically
     ----------------------------------------------------------- */
+    var categories = [];
+    var images = [];
 
-    var dir = "https://api.github.com/repos/dhyey-shah/kdhitesh/contents/gallery/assets/img/img/";
-    var folders = [];
-    var data = [];
+    (function(dirFile) { 
+        var obj = dirFile;
 
-    function ajaxCall(dir, onSuccess, params={}){
-        $.ajax({
-            url: dir,
-            async: false,
-            headers: {"Authorization": 'token 02ff93522d2f9693b2410fccf7617565e3feff3f'},
-            data: JSON,
-            success: function (data) {
-                onSuccess(data, params);
-            }
-        });
-    }
-
-    function getFolders(data, holder){
-        data.forEach(function(item){
-            holder.push(item.name);
-        });
-    }
-
-    function getImages(data, params){
-        data.forEach(function(item){
-            let obj = {
-                name: item.name,
-                category: params.category,
-                url: item.download_url
-            }
-            params.holder.push(obj);
+        obj.children.forEach(function(item){
+            categories.push(item.name);
+            item.children.forEach(function(nested_item){
+                images.push( {
+                    name: nested_item.name,
+                    category: item.name
+                });
+            })
         })
-    }
-
-    ajaxCall(dir, getFolders, folders);
-
-    folders.forEach(function(item){
-        let d = dir + item + '/';
-        ajaxCall(d,getImages, {holder:data, category: item});
-    });
+    })(paths);
 
     // String formatter
     // https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
 
     if (!String.prototype.format) {
-        String.prototype.format = function() {
-          var args = arguments;
-          return this.replace(/{(\d+)}/g, function(match, number) { 
-            return typeof args[number] != 'undefined'
-              ? args[number]
-              : match
-            ;
-          });
+        String.prototype.format = function () {
+            var args = arguments;
+            return this.replace(/{(\d+)}/g, function (match, number) {
+                return typeof args[number] != 'undefined' ?
+                    args[number] :
+                    match;
+            });
         };
-      }
+    }
 
     // String to be formatted
     // {0} - category
@@ -148,35 +121,37 @@ $(document).ready(function() {
     // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 
     function shuffle(array) {
-        var currentIndex = array.length, temporaryValue, randomIndex;
-      
+        var currentIndex = array.length,
+            temporaryValue, randomIndex;
+
         // While there remain elements to shuffle...
         while (0 !== currentIndex) {
-      
-          // Pick a remaining element...
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex -= 1;
-      
-          // And swap it with the current element.
-          temporaryValue = array[currentIndex];
-          array[currentIndex] = array[randomIndex];
-          array[randomIndex] = temporaryValue;
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
         }
-      
+
         return array;
     }
 
-    shuffle(data);
+    shuffle(images);
     let $grid1 = $('.grid');
     let $filter = $('#filtr-container');
 
-    folders.forEach(function(item){
+    categories.forEach(function (item) {
         $filter.append(html_filter.format(item));
     })
 
-    data.forEach(function(item){
+    let base_dir = "assets/img/img/";
+    images.forEach(function (item) {
         let cat = item.category;
-        let src = item.url;
+        let src = base_dir + cat + '/' + item.name;
         $grid1.append(html_div.format(cat, src));
     })
 
@@ -197,15 +172,17 @@ $(document).ready(function() {
         }
     });
 
-    $grid.imagesLoaded().progress( function() {
+    $grid.imagesLoaded().progress(function () {
         $grid.isotope('layout');
     });
-    $('#filtr-container').on( 'click', 'li', function(e) {
+    $('#filtr-container').on('click', 'li', function (e) {
         e.preventDefault();
         $('#filtr-container li').removeClass('active');
         $(this).closest('li').addClass('active');
         var filterValue = $(this).attr('data-filter');
-        $grid.isotope({ filter: filterValue });
+        $grid.isotope({
+            filter: filterValue
+        });
     });
 
     /* ==============================================
@@ -222,11 +199,11 @@ $(document).ready(function() {
         gallery: {
             enabled: true,
             navigateByImgClick: true,
-            preload: [0,1] // Will preload 0 - before current, and 1 after the current image
+            preload: [0, 1] // Will preload 0 - before current, and 1 after the current image
         },
         image: {
             tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
-            titleSrc: function(item) {
+            titleSrc: function (item) {
                 return item.el.attr('title');
             }
         },
@@ -255,24 +232,25 @@ $(document).ready(function() {
      /* ------------------------------------- */
     'use strict';
 
-    var waypoints = $('.progress_container').waypoint(function() {
+    var waypoints = $('.progress_container').waypoint(function () {
         $('.progress .progress-bar').progressbar({
             transition_delay: 1000
         });
-    },{
+    }, {
         offset: '50%'
     });
 
 
-        /* --------------------------------------------------------
+    /* --------------------------------------------------------
     MAPS
     ----------------------------------------------------------- */
     var map = $('#map');
-    if(map.length > 0) {
+    if (map.length > 0) {
         google.maps.event.addDomListener(window, 'load', init);
         var lattuide = map.attr('data-lat');
         var longtuided = map.attr('data-lon');
     }
+
     function init() {
         // Basic options for a simple Google Map
         // For more options see: https://developers.google.com/maps/documentation/javascript/reference#MapOptions
@@ -288,12 +266,10 @@ $(document).ready(function() {
 
             // How you would like to style the map.
             // This is where you would paste any style found on Snazzy Maps.
-            styles: [
-                {
+            styles: [{
                     "featureType": "water",
                     "elementType": "geometry",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "color": "#a3ccff"
                         },
                         {
@@ -304,8 +280,7 @@ $(document).ready(function() {
                 {
                     "featureType": "landscape",
                     "elementType": "geometry",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "color": "#dfdfdf"
                         },
                         {
@@ -316,8 +291,7 @@ $(document).ready(function() {
                 {
                     "featureType": "road.highway",
                     "elementType": "geometry.fill",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "color": "#ffffff"
                         },
                         {
@@ -328,8 +302,7 @@ $(document).ready(function() {
                 {
                     "featureType": "road.highway",
                     "elementType": "geometry.stroke",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "color": "#ffffff"
                         },
                         {
@@ -343,8 +316,7 @@ $(document).ready(function() {
                 {
                     "featureType": "road.arterial",
                     "elementType": "geometry",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "color": "#ffffff"
                         },
                         {
@@ -355,8 +327,7 @@ $(document).ready(function() {
                 {
                     "featureType": "road.local",
                     "elementType": "geometry",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "color": "#ffffff"
                         },
                         {
@@ -367,8 +338,7 @@ $(document).ready(function() {
                 {
                     "featureType": "poi",
                     "elementType": "geometry",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "color": "#f5f5f5"
                         },
                         {
@@ -379,8 +349,7 @@ $(document).ready(function() {
                 {
                     "featureType": "poi.park",
                     "elementType": "geometry",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "color": "#f9ecd4"
                         },
                         {
@@ -390,8 +359,7 @@ $(document).ready(function() {
                 },
                 {
                     "elementType": "labels.text.stroke",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "visibility": "on"
                         },
                         {
@@ -404,8 +372,7 @@ $(document).ready(function() {
                 },
                 {
                     "elementType": "labels.text.fill",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "saturation": 36
                         },
                         {
@@ -418,17 +385,14 @@ $(document).ready(function() {
                 },
                 {
                     "elementType": "labels.icon",
-                    "stylers": [
-                        {
-                            "visibility": "off"
-                        }
-                    ]
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
                 },
                 {
                     "featureType": "transit",
                     "elementType": "geometry",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "color": "#f2f2f2"
                         },
                         {
@@ -439,8 +403,7 @@ $(document).ready(function() {
                 {
                     "featureType": "administrative",
                     "elementType": "geometry.fill",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "color": "#fefefe"
                         },
                         {
@@ -451,8 +414,7 @@ $(document).ready(function() {
                 {
                     "featureType": "administrative",
                     "elementType": "geometry.stroke",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "color": "#fefefe"
                         },
                         {
