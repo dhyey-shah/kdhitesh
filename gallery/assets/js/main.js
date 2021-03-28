@@ -173,19 +173,19 @@ $(document).ready(function () {
     });
 
     $(".grid .grid-item img").Lazy({
-        beforeLoad: function(){
-            $('.grid').isotope({
-                // set itemSelector so .grid-sizer is not used in layout
-                itemSelector: '.grid-item',
-                percentPosition: true,
-                masonry: {
-                    // use element for option
-                    columnWidth: '.grid-sizer'
-                }
-            })
-        },
+        // beforeLoad: function(){
+        //     $('.grid').isotope({
+        //         // set itemSelector so .grid-sizer is not used in layout
+        //         itemSelector: '.grid-item',
+        //         percentPosition: true,
+        //         masonry: {
+        //             // use element for option
+        //             columnWidth: '.grid-sizer'
+        //         }
+        //     })
+        // },
         afterLoad: function(){
-            $grid.isotope('layout');
+            $grid.isotope();
         }
     });
 
