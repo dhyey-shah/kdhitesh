@@ -186,12 +186,15 @@ $(document).ready(function () {
         // },
         afterLoad: function(){
             $grid.isotope();
+            $("#all_images").trigger('click');
         }
     });
 
     // $grid.imagesLoaded().progress(function () {
     //     $grid.isotope('layout');
     // });
+
+
 
     $('#filtr-container').on('click', 'li', function (e) {
         e.preventDefault();
