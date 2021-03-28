@@ -99,7 +99,7 @@ $(document).ready(function () {
     <div class="grid-item {0}  col-sm-12 col-md-6 col-lg-3">
         <a href="{1}" title="{0}">
             <div class="project_box_one">
-                <img src="{1}" alt="pro1" />
+                <img  data-src="{1}" alt="pro1" />
                 <div class="product_info">
                     <div class="product_info_text">
                         <div class="product_info_text_inner">
@@ -172,33 +172,27 @@ $(document).ready(function () {
         }
     });
 
-    var $win = $(window),
-    $imgs = $(".grid img");
-
-    function loadVisible($els, trigger) {
-        $els.filter(function () {
-            var rect = this.getBoundingClientRect();
-            return rect.top >= 0 && rect.top <= window.innerHeight;
-        }).trigger(trigger);
-    }
-
-    $grid.isotope('on', 'layoutComplete', function () {
-        loadVisible($imgs, 'lazylazy');
+    $(".grid .grid-item img").Lazy({
+        beforeLoad: function(){
+            $('.grid').isotope({
+                // set itemSelector so .grid-sizer is not used in layout
+                itemSelector: '.grid-item',
+                percentPosition: true,
+                masonry: {
+                    // use element for option
+                    columnWidth: '.grid-sizer'
+                }
+            })
+        },
+        afterLoad: function(){
+            $grid.isotope('layout');
+        }
     });
 
-    $win.on('scroll', function () {
-        loadVisible($imgs, 'lazylazy');
-    });
+    // $grid.imagesLoaded().progress(function () {
+    //     $grid.isotope('layout');
+    // });
 
-    $(".grid img").lazyload({
-        effect: "fadeIn",
-        failure_limit: Math.max($imgs.length - 1, 0),
-        event: 'lazylazy'
-    });
-
-    $grid.imagesLoaded().progress(function () {
-        $grid.isotope('layout');
-    });
     $('#filtr-container').on('click', 'li', function (e) {
         e.preventDefault();
         $('#filtr-container li').removeClass('active');
