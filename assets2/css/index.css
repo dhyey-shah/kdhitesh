@@ -1,0 +1,13 @@
+html,body {
+    height: 100%;
+}
+
+.home-profile{
+    position: absolute;
+    background-color: black;
+    height: 75%;
+}
+
+.home-profile-image{
+    border-radius: 50%;
+}
