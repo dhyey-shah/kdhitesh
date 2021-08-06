@@ -12,5 +12,5 @@ def path_to_dict(path):
     return d
 
 paths = "var paths = "
-paths = paths + json.dumps(path_to_dict('./assets/img/img')) 
 paths = paths + json.dumps(path_to_dict('./gallery/assets/img/img')) 
+print(paths)
