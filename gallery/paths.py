@@ -11,6 +11,6 @@ def path_to_dict(path):
         d['type'] = "file"
     return d
 
-with open('paths.js', 'w') as file:
-    file.write("var paths = ")
-    file.write(json.dumps(path_to_dict('./assets/img/img')))
+paths = "var paths = "
+paths = paths + json.dumps(path_to_dict('./assets/img/img')) 
+print(paths)
