@@ -2,7 +2,6 @@ import os
 import json
 
 def path_to_dict(path):
-    print(os.path.basename(path))
     d = {'name': os.path.basename(path)}
     if os.path.isdir(path):
         d['type'] = "directory"
