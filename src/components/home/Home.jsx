@@ -1,7 +1,8 @@
+import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
-import Masonry from "../masonry/Masonry";
 import { categories, paths } from "../../media";
-import { Link } from "react-router-dom";
+import Masonry from "../masonry/Masonry";
+import { useEffect, useState } from "react";
 
 const Container = styled.div`
     display: grid;
@@ -79,7 +80,26 @@ const MasonryWrapper = styled.div`
     
 `;
 
-function Home(){
+function Home() {
+    let params = useParams();
+    const defaultCategory = 'All';
+    const [category, setCategory] = useState(params.category || defaultCategory);
+    const [imgId, setImgId] = useState(null);
+
+    useEffect(() => {
+        if (params.imgid){
+            console.log(params.imgid);
+            setCategory(paths[params.imgid]['category']);
+            setImgId(params.imgid)
+        }
+        else if (params.category)
+            setCategory(params.category);
+        else
+            setCategory(defaultCategory)
+            
+        return () => setImgId(null)
+    }, [params.imgid, params.category])
+
     return (
         <Container>
             <Navbar>
@@ -94,8 +114,10 @@ function Home(){
                 </NavbarSocial>
             </Navbar>
             <MasonryWrapper>
-                <Masonry 
-                    media={paths} 
+                <Masonry
+                    media={paths}
+                    imgId={imgId}
+                    category={category}
                     allCategories={categories}
                     defaultCategory={'All'}
                 />
