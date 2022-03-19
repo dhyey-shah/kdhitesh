@@ -73,7 +73,6 @@ const NavLink = styled(Link)`
 `
 
 const MasonryWrapper = styled.div`
-    overflow-y: auto;
     @media only screen and (min-width: 551px) {
         margin: 0 24px;
     }
@@ -88,15 +87,18 @@ function Home(){
                     <NavbarLogoImg src={"/logo.png"} />
                 </NavbarLogoWrapper>
                 <NavbarCategories>
-                    <NavLink to={'/'}>All</NavLink>
-                    {categories.map((category, index) => <NavLink key={index} to={`/gallery/${category}`}>{category}</NavLink>)}
+                    {Object.keys(categories).map((category, index) => <NavLink key={index} to={`/gallery/${category}`}>{category}</NavLink>)}
                 </NavbarCategories>
                 <NavbarSocial>
                     {['whatsapp', 'facebook'].map((social, index) => <NavLink key={index} to={'/wh'}>{social}</NavLink>)}
                 </NavbarSocial>
             </Navbar>
             <MasonryWrapper>
-                <Masonry media={paths} />
+                <Masonry 
+                    media={paths} 
+                    allCategories={categories}
+                    defaultCategory={'All'}
+                />
             </MasonryWrapper>
         </Container>
     )
