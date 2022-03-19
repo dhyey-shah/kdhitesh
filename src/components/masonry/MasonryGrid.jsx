@@ -1,7 +1,8 @@
 
-import { forwardRef, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
+import { useWindowSize } from '../../hooks';
 
 const Grid = styled.div`
     display: grid;
@@ -73,14 +74,15 @@ const MediaLoader = styled.div`
     }
 `;
 
-const MasonryGrid = forwardRef((props, gridMediaWrapperRef) => {
-    const { media, firstVisibleGridItem } = props;
+function MasonryGrid(props) {
+    const { media, category, allCategories, defaultCategory } = props;
 
     const gridRef = useRef(null);
+    const gridMediaWrapperRef = useRef([]);
+    const windowSize = useWindowSize()
 
     const gridItems = useMemo(() =>
-        media.map((media, index) => {
-            console.log("RENDER "+index);
+        Object.entries(media).map(([id, media]) => {
             let ele;
             let data = {
                 "data-src": media.src,
@@ -98,56 +100,53 @@ const MasonryGrid = forwardRef((props, gridMediaWrapperRef) => {
             return (
                 <GridMediaWrapper
                     {...data}
-                    ref={e => gridMediaWrapperRef.current[index] = e}
-                    key={media.id}
-                    data-id={index}
+                    ref={e => gridMediaWrapperRef.current[id] = e}
+                    key={id}
                 >
-                    <Link 
-                    key={media.id}
-                    to={`/img/${media.id}`}    
-                >
-                    {ele}
-                    <MediaLoader />
+                    <Link
+                        key={id}
+                        to={`/img/${id}`}
+                    >
+                        {ele}
+                        <MediaLoader />
                     </Link>
                 </GridMediaWrapper>
             );
-
         })
-        , [media.length]);
+        , []
+    );
+
+    function computeGridDimensions(category) {
+        let item0 = gridMediaWrapperRef.current[allCategories[category]];
+        item0.style.width = 'auto';
+        let width = item0.getBoundingClientRect().width;
+        gridMediaWrapperRef.current.forEach(item => {
+            item.classList.remove('hidden');  // required to calculate span of element
+            const height = (item.dataset.height * width) / item.dataset.width;
+            item.style.width = width + 'px';
+            item.style.height = height + 'px';
+        })
+        resizeAllGridItems();
+    }
+
+    function resizeAllGridItems() {
+        const grid = gridRef.current;
+        const rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+        const rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
+        gridMediaWrapperRef.current.forEach((item, index) => {
+            resizeGridItem(item, rowGap, rowHeight)
+        });
+    }
+
+    function resizeGridItem(item, rowGap, rowHeight) {
+        const rowSpan = Math.ceil((item.getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
+        item.style.gridRowEnd = "span " + rowSpan;
+    }
 
     useEffect(() => {
         gridMediaWrapperRef.current = gridMediaWrapperRef.current.slice(0, gridItems.length);
 
-        function computeGridDimensions() {
-            let index = firstVisibleGridItem ? firstVisibleGridItem : 0;
-            console.log(firstVisibleGridItem);
-            let item0 = gridMediaWrapperRef.current[index];
-            item0.style.width = 'auto';
-            let width = item0.getBoundingClientRect().width;
-            gridMediaWrapperRef.current.forEach(item => {
-                const height = (item.dataset.height * width) / item.dataset.width;
-                item.style.width = width + 'px';
-                item.style.height = height + 'px';
-            })
-            resizeAllGridItems();
-        }
-
-        function resizeAllGridItems() {
-            const grid = gridRef.current;
-            const rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
-            const rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
-            gridMediaWrapperRef.current.forEach((item, index) => {
-                resizeGridItem(item, rowGap, rowHeight)
-            });
-        }
-
-        function resizeGridItem(item, rowGap, rowHeight) {
-            const rowSpan = Math.ceil((item.getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
-            item.style.gridRowEnd = "span " + rowSpan;
-        }
-
         function lazyload() {
-            const lazyloadMedia = gridMediaWrapperRef.current;
             var mediaObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -162,24 +161,34 @@ const MasonryGrid = forwardRef((props, gridMediaWrapperRef) => {
                 });
             });
 
-            lazyloadMedia.forEach(image => {
+            gridMediaWrapperRef.current.forEach(image => {
                 mediaObserver.observe(image);
             });
         }
 
-        computeGridDimensions();
         lazyload();
+    }, []);
 
-        window.addEventListener("resize", computeGridDimensions);
+    useEffect(() => {
+        computeGridDimensions(category);
+    }, [windowSize[0], windowSize[1]]);
 
-        return () => window.removeEventListener("resize", computeGridDimensions)
-    }, [gridItems.length, firstVisibleGridItem]);
+    useEffect(() => {
+        gridMediaWrapperRef.current.forEach(item => {
+            if (category !== defaultCategory && category !== item.dataset.category){
+                item.classList.add('hidden');
+            }
+            else {
+                item.classList.remove('hidden');
+            }
+        });
+    }, [category, windowSize[0], windowSize[1]]);
 
     return (
         <Grid ref={gridRef}>
             {gridItems}
         </Grid>
     )
-});
+};
 
 export default MasonryGrid;
