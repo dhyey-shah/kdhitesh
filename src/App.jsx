@@ -1,5 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./components/home/Home";
+import CategoryDropdown from "./components/home/CategoryDropdown";
+import Home, { MasonryWrapper } from "./components/home/Home";
+import MediaViewer from "./components/masonry/MediaViewer";
+import { categories } from "./media";
 
 function App() {
     return (
