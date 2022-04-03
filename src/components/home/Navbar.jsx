@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { device } from "../../constants";
+import CategoryDropdown from "./CategoryDropdown";
 
 const Container = styled.div`
     height: var(--navbar-height);
@@ -13,6 +15,7 @@ const Container = styled.div`
 
     @media ${device.tablet} {
         justify-content: flex-start;
+        padding: 0 8px;
     }
 `;
 
@@ -20,6 +23,10 @@ const NavbarLogoWrapper = styled(Link)`
     width: 72px;
     margin: 0 16px;
     border-radius: 25px;
+
+    @media ${device.tablet} {
+        margin: 0;
+    }
 `;
 
 const NavbarLogoImg = styled.img`
@@ -68,14 +75,42 @@ const CategoryDropdownLink = styled(Link)`
 
     @media ${device.tablet} {
         display: block;
-        
+        font-weight: 700;
+        text-decoration: none;
+        color: black;
+
         // align right
         margin-left: auto;
+        -webkit-tap-highlight-color:  rgba(255, 255, 255, 0); 
+
+        &:focus {
+            outline: none;
+            background-color: transparent;
+        }
+
+        &:visited, &:active {
+            color: black;
+        }
+    }
+`
+
+const DropdownArrow = styled.i`
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    margin: 2px;
+
+    &.down {
+        transform: rotate(45deg);
     }
 `
 
 function Navbar(props) {
-    const Social = ({className}) => (
+    const [dropdown, setDropdown] = useState(false);
+
+
+    const Social = ({ className }) => (
         <NavbarSocial className={className}>
             {['whatsapp', 'facebook'].map((social, index) => <NavLink key={index} to={'/wh'}>{social}</NavLink>)}
         </NavbarSocial>
@@ -89,8 +124,13 @@ function Navbar(props) {
             </NavbarLogoWrapper>
             <Social />
             <CategoryDropdownLink to={'/dropdown'}>
-                Category: {props.category}
+                <span>
+                    {props.category} <DropdownArrow className="down" />
+                </span>
             </CategoryDropdownLink>
+            {dropdown &&
+                <CategoryDropdown categories={props.categories} />
+            }
         </Container>
     )
 }

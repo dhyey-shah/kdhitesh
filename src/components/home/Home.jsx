@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { device } from "../../constants";
 import { categories, paths } from "../../media";
 import Masonry from "../masonry/Masonry";
+import CategoryDropdown from "./CategoryDropdown";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
@@ -56,11 +57,16 @@ function Home() {
 
     useEffect(() => {
         if (params.imgid) {
-            setCategory(paths[params.imgid]['category']);
-            setImgId(params.imgid)
+            if(params.imgid in paths){
+                setCategory(paths[params.imgid]['category']);
+                setImgId(params.imgid)
+            }
         }
-        else if (params.category)
-            setCategory(params.category);
+        else if (params.category){
+            if(params.category in categories){
+                setCategory(params.category);
+            }
+        }
         else
             setCategory(defaultCategory)
 
@@ -69,6 +75,7 @@ function Home() {
 
     return (
         <Container>
+            <Outlet />
             <NavbarWrapper>
                 <Navbar
                     category={category}
@@ -87,9 +94,9 @@ function Home() {
                     imgId={imgId}
                     category={category}
                     allCategories={categories}
-                    defaultCategory={'All'}
+                    defaultCategory={defaultCategory}
                 />
-            </MasonryWrapper>
+            </MasonryWrapper>   
         </Container>
     )
 }

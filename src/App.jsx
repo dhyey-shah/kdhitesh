@@ -8,9 +8,10 @@ function App() {
     return (
         <Routes>
             <Route path="/" element={<Home />} >
-                <Route path="/img/:imgid" element={<Home />} />
-                <Route path="/gallery/:category" element={<Home />} />
+                <Route path="dropdown" element={<CategoryDropdown categories={categories} />} />
             </Route>
+            <Route path="/img/:imgid" element={<Home />} />
+            <Route path="/gallery/:category" element={<Home />} />
         </Routes>
     )
 }

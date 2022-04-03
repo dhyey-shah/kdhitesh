@@ -16,20 +16,20 @@ const GlobalStyle = createGlobalStyle`
 
     // Grid settings
     --grid-width: 240px;
-    --grid-gap: 20px;
+    --grid-gap: 16px;
   }
 
   @media ${device.tablet} {
     :root{
       --grid-width: 200px;
-      --grid-gap: 10px;
+      --grid-gap: 8px;
     }
   }
 
   @media ${device.mobileL} {
     :root{
       --grid-width: 150px;
-      --grid-gap: 10px;
+      --grid-gap: 8px;
     }
   }
 
