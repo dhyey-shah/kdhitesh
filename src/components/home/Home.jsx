@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { device } from "../../constants";
 import { categories, paths } from "../../media";
 import Masonry from "../masonry/Masonry";
-import CategoryDropdown from "./CategoryDropdown";
+import BottomNav from "./BottomNav";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
@@ -48,6 +48,20 @@ const MasonryWrapper = styled.div`
     }
     
 `;
+
+const BottomNavWrapper = styled.div`
+    display: none;
+
+    position: fixed;
+    bottom: 16px;
+
+
+    @media ${device.tablet} {
+        display: inherit;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+`
 
 function Home() {
     let params = useParams();
@@ -96,7 +110,10 @@ function Home() {
                     allCategories={categories}
                     defaultCategory={defaultCategory}
                 />
-            </MasonryWrapper>   
+            </MasonryWrapper>
+            <BottomNavWrapper>
+                <BottomNav />
+            </BottomNavWrapper>   
         </Container>
     )
 }

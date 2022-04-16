@@ -12,11 +12,11 @@ const GlobalStyle = createGlobalStyle`
   }
 
   :root{
-    --navbar-height: 72px;
+    --navbar-height: 64px;
 
     // Grid settings
     --grid-width: 240px;
-    --grid-gap: 16px;
+    --grid-gap: 8px;
   }
 
   @media ${device.tablet} {

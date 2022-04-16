@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { device } from "../../constants";
+import { device, social } from "../../constants";
 import CategoryDropdown from "./CategoryDropdown";
 
 const Container = styled.div`
@@ -15,7 +15,11 @@ const Container = styled.div`
 
     @media ${device.tablet} {
         justify-content: flex-start;
-        padding: 0 8px;
+        padding: 0 24px;
+    }
+
+    @media ${device.mobileL} {
+        padding: 0;
     }
 `;
 
@@ -34,8 +38,8 @@ const NavbarLogoImg = styled.img`
     height: auto;
 `;
 
-const NavLink = styled(Link)`
-    height: 48px;
+const NavLink = styled.a`
+    height: 32px;
     min-width: 60px;
     text-decoration: none;
     padding-left: 8px;
@@ -69,6 +73,11 @@ const NavbarSocial = styled.div`
         display: none;
     }
 `;
+
+const SocialIcon = styled.img`
+    height: 100%;
+    width: auto;
+`
 
 const CategoryDropdownLink = styled(Link)`
     display: none;
@@ -107,12 +116,13 @@ const DropdownArrow = styled.i`
 `
 
 function Navbar(props) {
-    const [dropdown, setDropdown] = useState(false);
-
+    useEffect(() => {
+        document.title += ' | Gallery'
+    });
 
     const Social = ({ className }) => (
         <NavbarSocial className={className}>
-            {['whatsapp', 'facebook'].map((social, index) => <NavLink key={index} to={'/wh'}>{social}</NavLink>)}
+            {social.map((social, index) => <NavLink key={index} href={social['link']} target="_blank"><SocialIcon src={social['icon']}></SocialIcon></NavLink>)}
         </NavbarSocial>
     )
 
@@ -128,9 +138,6 @@ function Navbar(props) {
                     {props.category} <DropdownArrow className="down" />
                 </span>
             </CategoryDropdownLink>
-            {dropdown &&
-                <CategoryDropdown categories={props.categories} />
-            }
         </Container>
     )
 }
