@@ -1,19 +1,15 @@
 
-import { useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
+import { device } from '../../constants';
 import { useWindowSize } from '../../hooks';
 
 const Grid = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px,1fr));
-    grid-gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(var(--grid-width),1fr));
+    grid-gap: var(--grid-gap);
     grid-auto-rows: 30px;
-
-    @media only screen and (max-width: 551px) {
-        grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
-        grid-gap: 10px;
-    }
 `;
 
 const GridMediaWrapper = styled.div`
@@ -21,12 +17,6 @@ const GridMediaWrapper = styled.div`
 
     &.hidden {
         display: none;
-    }
-
-    @media only screen and (max-width: 551px) {
-        filter: none;
-        transition: none;
-        cursor: inherit;
     }
 `;
 
@@ -39,6 +29,14 @@ const GridMediaImage = styled.img`
         filter: brightness(0.5);
         transition:filter .25s ease-in-out;
         cursor:zoom-in;
+    }
+
+    @media ${device.tablet} {
+        &:hover{
+            filter: none;
+            transition: none;
+            cursor: inherit;
+        }
     }
 `;
 
@@ -117,6 +115,7 @@ function MasonryGrid(props) {
     );
 
     function computeGridDimensions(category) {
+        console.log("HERE");
         let item0 = gridMediaWrapperRef.current[allCategories[category]];
         item0.style.width = 'auto';
         let width = item0.getBoundingClientRect().width;
@@ -191,4 +190,4 @@ function MasonryGrid(props) {
     )
 };
 
-export default MasonryGrid;
+export default memo(MasonryGrid);

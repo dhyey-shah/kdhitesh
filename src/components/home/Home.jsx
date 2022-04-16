@@ -1,105 +1,119 @@
+import { useEffect, useState } from "react";
+import { Outlet, useParams } from "react-router-dom";
 import styled from "styled-components";
-import Masonry from "../masonry/Masonry";
+import { device } from "../../constants";
 import { categories, paths } from "../../media";
-import { Link } from "react-router-dom";
+import Masonry from "../masonry/Masonry";
+import BottomNav from "./BottomNav";
+import Navbar from "./Navbar";
+import Sidebar from "./Sidebar";
 
 const Container = styled.div`
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: auto 1fr;
     grid-template-rows: auto 1fr;
 `;
 
-const Navbar = styled.header`
+const NavbarWrapper = styled.header`
     grid-row: 1;
     grid-column: 1/3;
-    height: 80px;
+
+    // stick to top
     top: 0;
+    position: sticky;
     z-index: 2;
-    background-color: white;
-    padding: 0 16px;
+`;
 
-    display: flex;
-    align-items: center;
+const SidebarWrapper = styled.div`
+    grid-column: 1/2;
+    width: 176px;
 
-    @media only screen and (max-width: 551px) {
+    // stick to right
+    position: sticky;
+    top: var(--navbar-height);
+    height: calc(100vh - var(--navbar-height));
+    
+
+    @media ${device.tablet} {
         display: none;
     }
 `;
 
-const NavbarLogoWrapper = styled(Link)`
-    width: 72px;
-    margin: 0 16px;
-    border-radius: 25px;
-`;
-
-const NavbarLogoImg = styled.img`
-    width: 100%;
-    height: auto;
-`;
-
-const NavbarCategories = styled.div`
-    align-self: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-`
-
-const NavbarSocial = styled.div`
-    align-self: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    // align right
-    margin-left: auto;
-`;
-
-const NavLink = styled(Link)`
-    height: 48px;
-    min-width: 60px;
-    text-decoration: none;
-    padding-left: 8px;
-    padding-right: 8px;
-    border-radius: 24px;
-    color: black;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover {
-        background-color: #efefef;
-    }
-`
-
 const MasonryWrapper = styled.div`
+    grid-row: 2;
+    grid-column: 2;
+
     @media only screen and (min-width: 551px) {
         margin: 0 24px;
     }
     
 `;
 
-function Home(){
+const BottomNavWrapper = styled.div`
+    display: none;
+
+    position: fixed;
+    bottom: 16px;
+
+
+    @media ${device.tablet} {
+        display: inherit;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+`
+
+function Home() {
+    let params = useParams();
+    const defaultCategory = 'All';
+    const [category, setCategory] = useState(params.category || defaultCategory);
+    const [imgId, setImgId] = useState(null);
+
+    useEffect(() => {
+        if (params.imgid) {
+            if(params.imgid in paths){
+                setCategory(paths[params.imgid]['category']);
+                setImgId(params.imgid)
+            }
+        }
+        else if (params.category){
+            if(params.category in categories){
+                setCategory(params.category);
+            }
+        }
+        else
+            setCategory(defaultCategory)
+
+        return () => setImgId(null)
+    }, [params.imgid, params.category])
+
     return (
         <Container>
-            <Navbar>
-                <NavbarLogoWrapper to={'/'}>
-                    <NavbarLogoImg src={"/logo.png"} />
-                </NavbarLogoWrapper>
-                <NavbarCategories>
-                    {Object.keys(categories).map((category, index) => <NavLink key={index} to={`/gallery/${category}`}>{category}</NavLink>)}
-                </NavbarCategories>
-                <NavbarSocial>
-                    {['whatsapp', 'facebook'].map((social, index) => <NavLink key={index} to={'/wh'}>{social}</NavLink>)}
-                </NavbarSocial>
-            </Navbar>
+            <Outlet />
+            <NavbarWrapper>
+                <Navbar
+                    category={category}
+                    categories={categories}
+                />
+            </NavbarWrapper>
+            <SidebarWrapper>
+                <Sidebar
+                    category={category}
+                    categories={categories}
+                />
+            </SidebarWrapper>
             <MasonryWrapper>
-                <Masonry 
-                    media={paths} 
+                <Masonry
+                    media={paths}
+                    imgId={imgId}
+                    category={category}
                     allCategories={categories}
-                    defaultCategory={'All'}
+                    defaultCategory={defaultCategory}
                 />
             </MasonryWrapper>
+            <BottomNavWrapper>
+                <BottomNav />
+            </BottomNavWrapper>   
         </Container>
     )
 }
