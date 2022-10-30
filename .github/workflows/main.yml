@@ -39,6 +39,7 @@ jobs:
 
     - name: Debug
       run: |
+        ls
         grep -rl "Bright" *
 
     - name: Upload production-ready build files
