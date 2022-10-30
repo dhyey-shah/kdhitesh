@@ -39,8 +39,7 @@ jobs:
 
     - name: Debug
       run: |
-        grep -rl "Bright" ./build
-        cat ./src/media.js
+        grep -rl "Bright" *
 
     - name: Upload production-ready build files
       uses: actions/upload-artifact@v2
