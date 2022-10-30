@@ -116,9 +116,6 @@ const DropdownArrow = styled.i`
 `
 
 function Navbar(props) {
-    useEffect(() => {
-        document.title += ' | Gallery'
-    });
 
     const Social = ({ className }) => (
         <NavbarSocial className={className}>
