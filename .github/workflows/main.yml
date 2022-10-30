@@ -16,7 +16,14 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    
+
+    - name: Run a multi-line script
+      run: |
+        pip install imagesize==1.3.0
+        python ./create_paths.py > ./src/media.js
+        cat ./src/media.js
+        ls
+
     - name: Install Node.js
       uses: actions/setup-node@v1
       with:
@@ -24,12 +31,6 @@ jobs:
     
     - name: Install NPM packages
       run: npm ci
-
-    - name: Run a multi-line script
-      run: |
-        pip install imagesize==1.3.0
-        python ./create_paths.py > ./src/media.js
-        cat ./src/media.js
     
     - name: Build project
       run: npm run build
