@@ -72,6 +72,24 @@ const MediaLoader = styled.div`
     }
 `;
 
+function shuffle(array) {
+    let currentIndex = array.length,  randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
+}
+
 function MasonryGrid(props) {
     const { media, category, allCategories, defaultCategory } = props;
 
@@ -80,16 +98,16 @@ function MasonryGrid(props) {
     const windowSize = useWindowSize()
 
     const gridItems = useMemo(() =>
-        Object.entries(media).map(([id, media]) => {
+        shuffle(Object.keys(media)).map(id => {
             let ele;
             let data = {
-                "data-src": media.src,
-                "data-width": media.width,
-                "data-height": media.height,
-                "data-category": media.category
+                "data-src": media[id].src,
+                "data-width": media[id].width,
+                "data-height": media[id].height,
+                "data-category": media[id].category
             };
 
-            if (media.type === 'video') {
+            if (media[id].type === 'video') {
                 ele = <GridMediaVideo />
             } else {
                 ele = <GridMediaImage />
