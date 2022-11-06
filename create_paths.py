@@ -12,7 +12,7 @@ def path_to_dict(path):
         for file in os.listdir(os.path.join(path, dir)):
             obj[id] = {
                 'name': file,
-                'type': 'image' if file.split('.')[-1] in ['jpeg', 'jpg', 'gif'] else 'video',
+                'type': 'image',
                 'width': imagesize.get(os.path.join(path, dir, file))[0],
                 'height': imagesize.get(os.path.join(path, dir, file))[1],
                 'category': dir,
