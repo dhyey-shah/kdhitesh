@@ -24,10 +24,10 @@ function MediaViewer(props){
     const navigate = useNavigate();
 
     function navitgateTo(dir){
-        if (dir === 'Right' && nextMediaId in paths)
+        if (dir === 'Right' && prvMediaId in paths)
             return navigate(`/img/${prvMediaId}`)
 
-        if (dir === 'Left' && nextMediaId > -1)
+        if (dir === 'Left' && nextMediaId in paths)
             return navigate(`/img/${nextMediaId}`)
 
     }
