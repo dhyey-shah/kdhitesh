@@ -119,7 +119,7 @@ function Navbar(props) {
 
     const Social = ({ className }) => (
         <NavbarSocial className={className}>
-            {social.map((social, index) => <NavLink key={index} href={social['link']} target="_blank"><SocialIcon src={social['icon']}></SocialIcon></NavLink>)}
+            {social.map((social, index) => <NavLink key={index} href={social['web']} target="_blank"><SocialIcon src={social['icon']}></SocialIcon></NavLink>)}
         </NavbarSocial>
     )
 
