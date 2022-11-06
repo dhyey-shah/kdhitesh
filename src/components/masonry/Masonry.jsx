@@ -17,7 +17,10 @@ function Masonry(props) {
                 props.imgId &&
                 (
                     <>
-                        <MediaViewer mediaObject={props.media[props.imgId]} />
+                        <MediaViewer mediaObject={props.media[props.imgId]}
+                                     nextMediaId={parseInt(props.imgId)+1}
+                                     prvMediaId={parseInt(props.imgId)-1}
+                        />
                         <MoreLikeThis>More Like This</MoreLikeThis>
                     </>
                 )
